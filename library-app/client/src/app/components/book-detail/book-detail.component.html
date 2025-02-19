@@ -1,0 +1,8 @@
+<div>
+  <h2>{{ book.title }}</h2>
+  <p><strong>Author:</strong> {{ book.author }}</p>
+  <p><strong>ISBN:</strong> {{ book.isbn }}</p>
+  <p><strong>Description:</strong> {{ book.description }}</p>
+  <button (click)="onCheckout()">Checkout</button>
+  <button (click)="onDelete()">Delete</button>
+</div>
