@@ -1,3 +1,4 @@
+// filepath: /Users/richardfrench/Documents/git/library-app/client/tsconfig.json
 {
   "compilerOptions": {
     "target": "es2015",
@@ -8,7 +9,9 @@
     "strict": true,
     "esModuleInterop": true,
     "skipLibCheck": true,
-    "forceConsistentCasingInFileNames": true
+    "forceConsistentCasingInFileNames": true,
+    "moduleResolution": "node", // Add this line
+    "experimentalDecorators": true // Add this line
   },
   "angularCompilerOptions": {
     "enableIvy": true

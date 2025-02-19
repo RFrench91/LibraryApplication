@@ -1,0 +1,1 @@
+{"ast":null,"code":"// filepath: /Users/richardfrench/Documents/git/library-app/client/src/environments/environment.ts\nexport const environment = {\n  production: false\n};","map":null,"metadata":{},"sourceType":"module"}

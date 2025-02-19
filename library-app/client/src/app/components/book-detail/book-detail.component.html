@@ -1,8 +1,7 @@
-<div>
+<!-- filepath: /Users/richardfrench/Documents/git/library-app/client/src/app/components/book-detail/book-detail.component.html -->
+<div *ngIf="book">
   <h2>{{ book.title }}</h2>
-  <p><strong>Author:</strong> {{ book.author }}</p>
-  <p><strong>ISBN:</strong> {{ book.isbn }}</p>
-  <p><strong>Description:</strong> {{ book.description }}</p>
+  <p>{{ book.author }}</p>
   <button (click)="onCheckout()">Checkout</button>
   <button (click)="onDelete()">Delete</button>
 </div>

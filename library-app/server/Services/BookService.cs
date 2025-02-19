@@ -1,12 +1,11 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using library-app.Models;
-using library-app.Data;
+using library_app.Models;
+using library_app.Data;
 using Microsoft.EntityFrameworkCore;
 
-namespace library-app.Services
-{
+namespace library_app.Services;
     public class BookService
     {
         private readonly LibraryContext _context;
@@ -50,4 +49,3 @@ namespace library-app.Services
             }
         }
     }
-}

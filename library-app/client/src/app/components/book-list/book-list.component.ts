@@ -1,6 +1,7 @@
+// filepath: /Users/richardfrench/Documents/git/library-app/client/src/app/components/book-list/book-list.component.ts
 import { Component, OnInit } from '@angular/core';
+import { Book } from '../../../models/book.model';
 import { BookService } from '../../services/book.service';
-import { Book } from '../../models/book.model';
 
 @Component({
   selector: 'app-book-list',
@@ -10,15 +11,9 @@ import { Book } from '../../models/book.model';
 export class BookListComponent implements OnInit {
   books: Book[] = [];
 
-  constructor(private bookService: BookService) {}
+  constructor(private bookService: BookService) { }
 
   ngOnInit(): void {
-    this.loadBooks();
-  }
-
-  loadBooks(): void {
-    this.bookService.getBooks().subscribe((data: Book[]) => {
-      this.books = data;
-    });
+    this.bookService.getBooks().subscribe(books => this.books = books);
   }
 }
