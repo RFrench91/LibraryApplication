@@ -1,2 +1,13 @@
 <!-- filepath: /Users/richardfrench/Documents/git/library-app/client/src/app/app.component.html -->
 <h1>Welcome to {{ title }}!</h1>
+
+<div *ngIf="!currentUser">
+  <app-login></app-login>
+  <app-signup></app-signup>
+</div>
+
+<div *ngIf="currentUser">
+  <button (click)="logout()">Logout</button>
+  <app-book-list></app-book-list>
+  <app-book-detail></app-book-detail>
+</div>

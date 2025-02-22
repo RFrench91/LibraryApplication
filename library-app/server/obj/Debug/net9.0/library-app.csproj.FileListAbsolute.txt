@@ -216,3 +216,7 @@
 /Users/richardfrench/Documents/git/library-app/server/obj/Debug/net9.0/library-app.pdb
 /Users/richardfrench/Documents/git/library-app/server/obj/Debug/net9.0/library-app.genruntimeconfig.cache
 /Users/richardfrench/Documents/git/library-app/server/obj/Debug/net9.0/ref/library-app.dll
+/Users/richardfrench/Documents/git/library-app/server/bin/Debug/net9.0/DevOne.Security.Cryptography.BCrypt.dll
+/Users/richardfrench/Documents/git/library-app/server/bin/Debug/net9.0/BCrypt.Net.dll
+/Users/richardfrench/Documents/git/library-app/server/bin/Debug/net9.0/Microsoft.AspNetCore.Authentication.JwtBearer.dll
+/Users/richardfrench/Documents/git/library-app/server/bin/Debug/net9.0/Bogus.dll
