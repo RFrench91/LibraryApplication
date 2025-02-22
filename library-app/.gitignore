@@ -1,1 +1,5 @@
 client/node_modules/
+server/bin/
+server/node_modules/
+client/.angular/
+server/obj/

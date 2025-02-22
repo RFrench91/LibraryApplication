@@ -1,4 +1,3 @@
-// filepath: /Users/richardfrench/Documents/git/library-app/server/Services/UserService.cs
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;

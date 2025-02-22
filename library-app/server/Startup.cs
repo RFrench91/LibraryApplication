@@ -1,4 +1,3 @@
-// filepath: /Users/richardfrench/Documents/git/library-app/server/Startup.cs
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
@@ -24,6 +23,17 @@ public class Startup
         services.AddScoped<BookService>();
 
         services.AddControllers();
+
+        services.AddCors(options =>
+        {
+            options.AddPolicy("AllowAllOrigins",
+                builder =>
+                {
+                    builder.AllowAnyOrigin()
+                           .AllowAnyMethod()
+                           .AllowAnyHeader();
+                });
+        });
 
         services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             .AddJwtBearer(options =>
@@ -52,8 +62,27 @@ public class Startup
 
         app.UseHttpsRedirection();
         app.UseRouting();
+        app.UseCors("AllowAllOrigins");
         app.UseAuthentication();
         app.UseAuthorization();
+
+        // Handle preflight requests
+        app.Use(async (context, next) =>
+        {
+            if (context.Request.Method == "OPTIONS")
+            {
+                context.Response.Headers.Add("Access-Control-Allow-Origin", "*");
+                context.Response.Headers.Add("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
+                context.Response.Headers.Add("Access-Control-Allow-Headers", "Content-Type, Authorization");
+                context.Response.StatusCode = 204;
+                await context.Response.CompleteAsync();
+            }
+            else
+            {
+                await next();
+            }
+        });
+
         app.UseEndpoints(endpoints =>
         {
             endpoints.MapControllers();

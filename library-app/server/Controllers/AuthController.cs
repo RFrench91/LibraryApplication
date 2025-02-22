@@ -1,7 +1,4 @@
-// filepath: /Users/richardfrench/Documents/git/library-app/server/Controllers/AuthController.cs
 using Microsoft.AspNetCore.Mvc;
-using System.Collections.Generic;
-using System.Threading.Tasks;
 using library_app.Models;
 using library_app.Services;
 using Microsoft.AspNetCore.Authorization;
@@ -9,7 +6,7 @@ using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
-using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
 
 namespace library_app.Controllers
 {
@@ -19,11 +16,13 @@ namespace library_app.Controllers
     {
         private readonly UserService _userService;
         private readonly IConfiguration _configuration;
+        private readonly ILogger<AuthController> _logger;
 
-        public AuthController(UserService userService, IConfiguration configuration)
+        public AuthController(UserService userService, IConfiguration configuration, ILogger<AuthController> logger)
         {
             _userService = userService;
             _configuration = configuration;
+            _logger = logger;
         }
 
         [HttpPost("register")]
@@ -41,16 +40,25 @@ namespace library_app.Controllers
         }
 
         [HttpPost("login")]
-        public async Task<ActionResult<string>> Login(User user)
+        public async Task<ActionResult<string>> Login(LoginRequest loginRequest)
         {
-            var existingUser = await _userService.GetUserByUsernameAsync(user.Username);
-            if (existingUser == null || !BCrypt.Net.BCrypt.Verify(user.Password, existingUser.Password))
+            _logger.LogInformation("Login attempt for user: {Username}", loginRequest.Username);
+
+            var existingUser = await _userService.GetUserByUsernameAsync(loginRequest.Username);
+            if (existingUser == null)
             {
+                _logger.LogWarning("User not found: {Username}", loginRequest.Username);
+                return Unauthorized("Invalid username or password");
+            }
+
+            if (!BCrypt.Net.BCrypt.Verify(loginRequest.Password, existingUser.Password))
+            {
+                _logger.LogWarning("Invalid password for user: {Username}", loginRequest.Username);
                 return Unauthorized("Invalid username or password");
             }
 
             var token = GenerateJwtToken(existingUser);
-            return Ok(token);
+            return Ok(new { token, user = existingUser });
         }
 
         [HttpGet("{id}")]

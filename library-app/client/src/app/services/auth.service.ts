@@ -1,26 +1,36 @@
-// filepath: /Users/richardfrench/Documents/git/library-app/client/src/app/services/auth.service.ts
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
-import { Observable } from 'rxjs';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { Observable, BehaviorSubject } from 'rxjs';
 import { tap } from 'rxjs/operators';
 import { User } from '../../models/user.model';
+
+interface LoginRequest {
+  username: string;
+  password: string;
+}
 
 @Injectable({
   providedIn: 'root'
 })
 export class AuthService {
   private apiUrl = 'http://localhost:5000/api/auth'; // Update with your API URL
-  private currentUser: User | null = null;
+  private currentUserSubject: BehaviorSubject<User | null>;
+  public currentUser: Observable<User | null>;
 
-  constructor(private http: HttpClient) { }
+  constructor(private http: HttpClient) {
+    this.currentUserSubject = new BehaviorSubject<User | null>(null);
+    this.currentUser = this.currentUserSubject.asObservable();
+  }
 
   login(username: string, password: string): Observable<{ token: string, user: User } | null> {
-    return this.http.post<{ token: string, user: User }>(`${this.apiUrl}/login`, { username, password })
+    const loginRequest: LoginRequest = { username, password };
+    const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
+    return this.http.post<{ token: string, user: User }>(`${this.apiUrl}/login`, loginRequest, { headers })
       .pipe(
         tap(response => {
           if (response) {
             localStorage.setItem('token', response.token);
-            this.currentUser = response.user;
+            this.currentUserSubject.next(response.user);
           }
         })
       );
@@ -31,15 +41,15 @@ export class AuthService {
   }
 
   logout(): void {
-    this.currentUser = null;
+    this.currentUserSubject.next(null);
     localStorage.removeItem('token');
   }
 
   getCurrentUser(): User | null {
-    return this.currentUser;
+    return this.currentUserSubject.value;
   }
 
   setCurrentUser(user: User): void {
-    this.currentUser = user;
+    this.currentUserSubject.next(user);
   }
 }

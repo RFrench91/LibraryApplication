@@ -1,4 +1,3 @@
-// filepath: /Users/richardfrench/Documents/git/library-app/client/src/app/components/login/login.component.ts
 import { Component } from '@angular/core';
 import { Router } from '@angular/router';
 import { AuthService } from '../../services/auth.service';
@@ -11,6 +10,7 @@ import { AuthService } from '../../services/auth.service';
 export class LoginComponent {
   username = '';
   password = '';
+  errorMessage = '';
 
   constructor(private authService: AuthService, private router: Router) { }
 
@@ -20,8 +20,10 @@ export class LoginComponent {
         this.authService.setCurrentUser(response.user);
         this.router.navigate(['/']);
       } else {
-        // Handle login error
+        this.errorMessage = 'Invalid username or password';
       }
+    }, error => {
+      this.errorMessage = 'Invalid username or password';
     });
   }
 }
