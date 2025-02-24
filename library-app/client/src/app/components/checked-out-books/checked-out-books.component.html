@@ -1,0 +1,15 @@
+<h2>My Checked Out Books</h2>
+
+<ul>
+  <li *ngFor="let checkout of checkouts">
+    <div>
+      <strong>{{ checkout.book.title }}</strong> by {{ checkout.book.author }}
+    </div>
+    <div>
+      Due Date: 
+      <span [ngClass]="{ 'overdue': isOverdue(checkout.dueDate) }">
+        {{ checkout.dueDate | date }}
+      </span>
+    </div>
+  </li>
+</ul>

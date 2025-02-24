@@ -1,0 +1,15 @@
+<h1>Welcome to the Library!</h1>
+
+<div *ngIf="!currentUser">
+    <router-outlet></router-outlet>
+  </div>
+<div *ngIf="currentUser">
+    <nav>
+      <ul>
+        <li><a routerLink="/">Home</a></li>
+        <li><a routerLink="/checked-out-books">My Checked Out Books</a></li>
+        <li><button (click)="logout()">Logout</button></li>
+      </ul>
+    </nav>
+    <router-outlet></router-outlet>
+  </div>

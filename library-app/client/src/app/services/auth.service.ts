@@ -18,8 +18,13 @@ export class AuthService {
   public currentUser: Observable<User | null>;
 
   constructor(private http: HttpClient) {
-    this.currentUserSubject = new BehaviorSubject<User | null>(null);
+    this.currentUserSubject = new BehaviorSubject<User | null>(this.getUserFromLocalStorage());
     this.currentUser = this.currentUserSubject.asObservable();
+  }
+
+  private getUserFromLocalStorage(): User | null {
+    const userJson = localStorage.getItem('user');
+    return userJson ? JSON.parse(userJson) : null;
   }
 
   login(username: string, password: string): Observable<{ token: string, user: User } | null> {
@@ -30,6 +35,7 @@ export class AuthService {
         tap(response => {
           if (response) {
             localStorage.setItem('token', response.token);
+            localStorage.setItem('user', JSON.stringify(response.user));
             this.currentUserSubject.next(response.user);
           }
         })
@@ -43,6 +49,7 @@ export class AuthService {
   logout(): void {
     this.currentUserSubject.next(null);
     localStorage.removeItem('token');
+    localStorage.removeItem('user');
   }
 
   getCurrentUser(): User | null {

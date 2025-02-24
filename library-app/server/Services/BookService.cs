@@ -1,11 +1,13 @@
+using library_app.Data;
+using library_app.Models;
+using Microsoft.EntityFrameworkCore;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using library_app.Models;
-using library_app.Data;
-using Microsoft.EntityFrameworkCore;
 
-namespace library_app.Services;
+namespace library_app.Services
+{
     public class BookService
     {
         private readonly LibraryContext _context;
@@ -15,7 +17,7 @@ namespace library_app.Services;
             _context = context;
         }
 
-        public async Task<List<Book>> GetAllBooksAsync()
+        public async Task<List<Book>> GetBooksAsync()
         {
             return await _context.Books.ToListAsync();
         }
@@ -25,27 +27,53 @@ namespace library_app.Services;
             return await _context.Books.FindAsync(id);
         }
 
-        public async Task<Book> CreateBookAsync(Book book)
+        public async Task<bool> IsBookAvailableAsync(int bookId)
         {
-            _context.Books.Add(book);
-            await _context.SaveChangesAsync();
-            return book;
+            return !await _context.Checkouts.AnyAsync(c => c.BookId == bookId && !c.IsReturned);
         }
 
-        public async Task<Book> UpdateBookAsync(Book book)
+        public async Task<Checkout> CheckoutBookAsync(int bookId, int userId)
         {
-            _context.Entry(book).State = EntityState.Modified;
-            await _context.SaveChangesAsync();
-            return book;
-        }
-
-        public async Task DeleteBookAsync(int id)
-        {
-            var book = await _context.Books.FindAsync(id);
-            if (book != null)
+            if (!await IsBookAvailableAsync(bookId))
             {
-                _context.Books.Remove(book);
-                await _context.SaveChangesAsync();
+                throw new InvalidOperationException("Book is not available.");
             }
+
+            var checkout = new Checkout
+            {
+                BookId = bookId,
+                UserId = userId,
+                CheckoutDate = DateTime.UtcNow,
+                DueDate = DateTime.UtcNow.AddDays(5),
+                IsReturned = false
+            };
+
+            _context.Checkouts.Add(checkout);
+            await _context.SaveChangesAsync();
+
+            return checkout;
+        }
+
+        public async Task<List<Checkout>> GetCheckedOutBooksAsync()
+        {
+            return await _context.Checkouts.Include(c => c.Book).Include(c => c.User).Where(c => !c.IsReturned).ToListAsync();
+        }
+
+        public async Task<List<Checkout>> GetCheckedOutBooksByUserAsync(int userId)
+        {
+            return await _context.Checkouts.Include(c => c.Book).Where(c => c.UserId == userId && !c.IsReturned).ToListAsync();
+        }
+
+        public async Task ReturnBookAsync(int checkoutId)
+        {
+            var checkout = await _context.Checkouts.FindAsync(checkoutId);
+            if (checkout == null)
+            {
+                throw new InvalidOperationException("Checkout not found.");
+            }
+
+            checkout.IsReturned = true;
+            await _context.SaveChangesAsync();
         }
     }
+}

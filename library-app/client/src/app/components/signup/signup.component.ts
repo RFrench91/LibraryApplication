@@ -21,9 +21,9 @@ export class SignupComponent {
     this.authService.signup(newUser).subscribe(user => {
       if (user) {
         this.authService.setCurrentUser(user);
-        this.router.navigate(['/']);
+        this.router.navigate(['/login']);
       } else {
-        // Handle signup error
+        alert('Signup failed');
       }
     });
   }

@@ -1,8 +1,10 @@
 using Microsoft.AspNetCore.Mvc;
-using System.Collections.Generic;
-using System.Threading.Tasks;
 using library_app.Models;
 using library_app.Services;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace library_app.Controllers
 {
@@ -18,14 +20,33 @@ namespace library_app.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Book>>> GetBooks()
+        public async Task<ActionResult<IEnumerable<Book>>> GetBooks([FromQuery] string title, [FromQuery] string author)
         {
-            var books = await _bookService.GetAllBooksAsync();
+            var books = await _bookService.GetBooksAsync();
+
+            if (!string.IsNullOrEmpty(title))
+            {
+                books = books.Where(b => b.Title.Contains(title, StringComparison.OrdinalIgnoreCase)).ToList();
+            }
+
+            if (!string.IsNullOrEmpty(author))
+            {
+                books = books.Where(b => b.Author.Contains(author, StringComparison.OrdinalIgnoreCase)).ToList();
+            }
+
+            return Ok(books);
+        }
+
+        [HttpGet("random")]
+        public async Task<ActionResult<IEnumerable<Book>>> GetRandomBooks([FromQuery] int count = 5)
+        {
+            var books = await _bookService.GetBooksAsync();
+            books = books.OrderBy(b => Guid.NewGuid()).Take(count).ToList();
             return Ok(books);
         }
 
         [HttpGet("{id}")]
-        public async Task<ActionResult<Book>> GetBook(int id)
+        public async Task<ActionResult<Book>> GetBookById(int id)
         {
             var book = await _bookService.GetBookByIdAsync(id);
             if (book == null)
@@ -35,36 +56,53 @@ namespace library_app.Controllers
             return Ok(book);
         }
 
-        [HttpPost]
-        public async Task<ActionResult<Book>> CreateBook(Book book)
+        [HttpGet("{id}/availability")]
+        public async Task<ActionResult<bool>> IsBookAvailable(int id)
         {
-            var createdBook = await _bookService.CreateBookAsync(book);
-            return CreatedAtAction(nameof(GetBook), new { id = createdBook.Id }, createdBook);
+            var isAvailable = await _bookService.IsBookAvailableAsync(id);
+            return Ok(isAvailable);
         }
 
-        [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateBook(int id, Book book)
+        [HttpPost("{id}/checkout")]
+        public async Task<ActionResult<Checkout>> CheckoutBook(int id, [FromBody] int userId)
         {
-            if (id != book.Id)
+            try
             {
-                return BadRequest();
+                var checkout = await _bookService.CheckoutBookAsync(id, userId);
+                return Ok(checkout);
             }
-
-            await _bookService.UpdateBookAsync(book);
-            return NoContent();
+            catch (InvalidOperationException ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
 
-        [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteBook(int id)
+        [HttpGet("checkedout")]
+        public async Task<ActionResult<IEnumerable<Checkout>>> GetCheckedOutBooks()
         {
-            var book = await _bookService.GetBookByIdAsync(id);
-            if (book == null)
-            {
-                return NotFound();
-            }
+            var checkouts = await _bookService.GetCheckedOutBooksAsync();
+            return Ok(checkouts);
+        }
 
-            await _bookService.DeleteBookAsync(id);
-            return NoContent();
+        [HttpGet("checkedout/{userId}")]
+        public async Task<ActionResult<IEnumerable<Checkout>>> GetCheckedOutBooksByUser(int userId)
+        {
+            var checkouts = await _bookService.GetCheckedOutBooksByUserAsync(userId);
+            return Ok(checkouts);
+        }
+
+        [HttpPost("return")]
+        public async Task<IActionResult> ReturnBook([FromBody] int checkoutId)
+        {
+            try
+            {
+                await _bookService.ReturnBookAsync(checkoutId);
+                return Ok();
+            }
+            catch (InvalidOperationException ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
     }
 }

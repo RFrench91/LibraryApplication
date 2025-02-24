@@ -1,7 +1,18 @@
+<h2>Featured Books</h2>
+
+<div>
+  <label for="title">Filter by Title:</label>
+  <input id="title" (input)="onTitleFilterChange($event.target.value)" />
+</div>
+
+<div>
+  <label for="author">Filter by Author:</label>
+  <input id="author" (input)="onAuthorFilterChange($event.target.value)" />
+</div>
+
 <ul>
-  <li *ngFor="let book of books" (click)="selectBook(book)">
-    <h3>{{ book.title }}</h3>
-    <p>Author: {{ book.author }}</p>
-    <p>ISBN: {{ book.isbn }}</p>
+  <li *ngFor="let book of books" (click)="onSelectBook(book)">
+    {{ book.title }} by {{ book.author }}
+    <button *ngIf="currentUser?.role === 'Customer'" (click)="isBookAvailable(book)">Check Out</button>
   </li>
 </ul>

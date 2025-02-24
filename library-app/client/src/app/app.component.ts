@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { AuthService } from './services/auth.service';
 import { User } from '../models/user.model';
+import { Book } from '../models/book.model';
 
 @Component({
   selector: 'app-root',
@@ -9,6 +10,7 @@ import { User } from '../models/user.model';
 })
 export class AppComponent implements OnInit {
   currentUser: User | null = null;
+  selectedBook: Book | null = null;
 
   constructor(private authService: AuthService) {}
 
@@ -18,7 +20,7 @@ export class AppComponent implements OnInit {
     });
   }
 
-  logout(): void {
-    this.authService.logout();
+  onBookSelected(book: Book): void {
+    this.selectedBook = book;
   }
 }
