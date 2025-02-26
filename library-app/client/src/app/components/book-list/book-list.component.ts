@@ -14,8 +14,11 @@ import { LoggingService } from '../../services/logging.service';
 })
 export class BookListComponent implements OnInit {
   books: Book[] = [];
-  titleFilter: string = '';
-  authorFilter: string = '';
+  filteredBooks: Book[] = [];
+  selectedTitle: string = '';
+  selectedAuthor: string = '';
+  titles: string[] = [];
+  authors: string[] = [];
   sortField: string = '';
   sortDirection: 'asc' | 'desc' = 'asc';
   showAvailable: boolean = true;
@@ -31,8 +34,17 @@ export class BookListComponent implements OnInit {
     this.authService.currentUser.subscribe(user => {
       this.currentUser = user;
     });
-    this.loadRandomBooks();
-  }
+    this.bookService.getRandomBooks().pipe(
+      catchError(error => {
+        this.loggingService.logError(`Failed to fetch random books: ${error.message}`);
+        return of([]);
+      })
+    ).subscribe(books => {
+      this.books = books;
+      this.filteredBooks = books;
+      this.titles = [...new Set(books.map(book => book.title))];
+      this.authors = [...new Set(books.map(book => book.author))];
+    });  }
 
   loadRandomBooks(): void {
     this.bookService.getRandomBooks().pipe(
@@ -49,27 +61,11 @@ export class BookListComponent implements OnInit {
   }
 
   filterBooks(): void {
-    const available = this.showAvailable ? true : null;
-    this.bookService.getBooks(this.titleFilter, this.authorFilter, available).pipe(
-      catchError(error => {
-        this.loggingService.logError(`Failed to filter books: ${error.message}`);
-        return [];
-      })
-    ).subscribe(books => {
-      this.books = books;
-      this.checkAvailability();
-      this.sortBooks();
-    });
-  }
-
-  onTitleFilterChange(title: string): void {
-    this.titleFilter = title;
-    this.filterBooks();
-  }
-
-  onAuthorFilterChange(author: string): void {
-    this.authorFilter = author;
-    this.filterBooks();
+    this.filteredBooks = this.books.filter(book => 
+      (this.selectedTitle ? book.title === this.selectedTitle : true) &&
+      (this.selectedAuthor ? book.author === this.selectedAuthor : true)
+    );
+    this.sortBooks();
   }
 
   onSortFieldChange(field: string): void {
@@ -88,20 +84,29 @@ export class BookListComponent implements OnInit {
   }
 
   sortBooks(): void {
-    if (this.sortField && Array.isArray(this.books)) {
-      this.books.sort((a, b) => {
-        const fieldA = a[this.sortField as keyof Book];
-        const fieldB = b[this.sortField as keyof Book];
-
-        if (typeof fieldA === 'string' && typeof fieldB === 'string') {
-          return this.compareStrings(fieldA, fieldB);
-        } else if (typeof fieldA === 'number' && typeof fieldB === 'number') {
-          return this.compareNumbers(fieldA, fieldB);
+    if (this.sortField) {
+      this.filteredBooks.sort((a, b) => {
+        const fieldA = (a as any)[this.sortField];
+        const fieldB = (b as any)[this.sortField];
+        if (fieldA < fieldB) {
+          return this.sortDirection === 'asc' ? -1 : 1;
+        } else if (fieldA > fieldB) {
+          return this.sortDirection === 'asc' ? 1 : -1;
         } else {
           return 0;
         }
       });
     }
+  }
+
+  setSortField(field: string): void {
+    if (this.sortField === field) {
+      this.sortDirection = this.sortDirection === 'asc' ? 'desc' : 'asc';
+    } else {
+      this.sortField = field;
+      this.sortDirection = 'asc';
+    }
+    this.sortBooks();
   }
 
   compareStrings(a: string, b: string): number {

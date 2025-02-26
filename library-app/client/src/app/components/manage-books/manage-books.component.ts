@@ -15,7 +15,7 @@ import { of } from 'rxjs';
 export class ManageBooksComponent implements OnInit {
   books: Book[] = [];
   currentUser: User | null = null;
-  newBook: Book = { id: 0, title: '', author: '', isbn: '', publishedDate: new Date(), genre: '', isAvailable: true, averageRating: 0 };
+  newBook: Book = { id: 0, title: '', author: '', isbn: '', publishedDate: new Date(), genre: '', isAvailable: true, averageRating: 0, coverImageUrl: '', description: '', publisher: '', numberOfPages: 0 };
 
   constructor(private bookService: BookService, private authService: AuthService, private router: Router) {}
 
@@ -45,7 +45,7 @@ export class ManageBooksComponent implements OnInit {
     ).subscribe(book => {
       if (book) {
         this.books.push(book);
-        this.newBook = { id: 0, title: '', author: '', isbn: '', publishedDate: new Date(), genre: '', isAvailable: true, averageRating: 0 };
+        this.newBook = { id: 0, title: '', author: '', isbn: '', publishedDate: new Date(), genre: '', isAvailable: true, averageRating: 0, coverImageUrl: '', description: '', publisher: '', numberOfPages: 0 };
       }
     });
   }

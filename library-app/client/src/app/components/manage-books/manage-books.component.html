@@ -21,6 +21,22 @@
         <label for="genre">Genre</label>
         <input type="text" id="genre" [(ngModel)]="newBook.genre" name="genre" required>
       </div>
+      <div>
+        <label for="coverImageUrl">Cover Image URL</label>
+        <input type="text" id="coverImageUrl" [(ngModel)]="newBook.coverImageUrl" name="coverImageUrl" required>
+      </div>
+      <div>
+        <label for="numberOfPages">Number of Pages</label>
+        <input type="number" id="numberOfPages" [(ngModel)]="newBook.numberOfPages" name="numberOfPages" required>
+      </div>
+      <div>
+        <label for="publisher">Publisher</label>
+        <input type="text" id="publisher" [(ngModel)]="newBook.publisher" name="publisher" required>
+      </div>
+      <div>
+        <label for="description">Description</label>
+        <textarea id="description" [(ngModel)]="newBook.description" name="description" required></textarea>
+      </div>
       <button type="submit">Add Book</button>
     </form>
   
@@ -33,6 +49,10 @@
           <input type="text" [(ngModel)]="book.isbn" name="isbn" required>
           <input type="date" [(ngModel)]="book.publishedDate" name="publishedDate" required>
           <input type="text" [(ngModel)]="book.genre" name="genre" required>
+          <input type="text" [(ngModel)]="book.coverImageUrl" name="coverImageUrl" required>
+          <input type="number" [(ngModel)]="book.numberOfPages" name="numberOfPages" required>
+          <input type="text" [(ngModel)]="book.publisher" name="publisher" required>
+          <textarea [(ngModel)]="book.description" name="description" required></textarea>
           <button (click)="editBook(book)">Save</button>
           <button (click)="deleteBook(book.id)">Delete</button>
         </div>

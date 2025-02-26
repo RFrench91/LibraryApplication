@@ -1,36 +1,49 @@
 <h2>Featured Books</h2>
 
 <div>
-  <label for="title">Filter by Title:</label>
-  <input id="title" (input)="onTitleFilterChange($event.target.value)" />
-</div>
-
-<div>
-  <label for="author">Filter by Author:</label>
-  <input id="author" (input)="onAuthorFilterChange($event.target.value)" />
-</div>
-
-<div>
-  <label for="sort">Sort by:</label>
-  <select id="sort" (change)="onSortFieldChange($event.target.value)">
-    <option value="">None</option>
-    <option value="title">Title</option>
-    <option value="author">Author</option>
-  </select>
-</div>
-
-<div>
   <label for="availability">Show Available Only:</label>
   <input id="availability" type="checkbox" [(ngModel)]="showAvailable" (change)="onAvailabilityChange(showAvailable)" />
 </div>
 
-<ul>
-  <li *ngFor="let book of books" (click)="onSelectBook(book)">
-    {{ book.title }} by {{ book.author }}
-    <button *ngIf="currentUser?.role === 'Customer' && availabilityMap[book.id]" (click)="checkoutBook(book)">Check Out</button>
-    <p *ngIf="!availabilityMap[book.id]">Checked Out</p>
-  </li>
-</ul>
+<div>
+  <h2>Book List</h2>
+  <div>
+    <label for="titleFilter">Title:</label>
+    <select id="titleFilter" [(ngModel)]="selectedTitle" (change)="filterBooks()">
+      <option value="">All</option>
+      <option *ngFor="let title of titles" [value]="title">{{ title }}</option>
+    </select>
+  </div>
+  <div>
+    <label for="authorFilter">Author:</label>
+    <select id="authorFilter" [(ngModel)]="selectedAuthor" (change)="filterBooks()">
+      <option value="">All</option>
+      <option *ngFor="let author of authors" [value]="author">{{ author }}</option>
+    </select>
+  </div>
+  <table>
+    <thead>
+      <tr>
+        <th (click)="setSortField('title')">Title</th>
+        <th (click)="setSortField('author')">Author</th>
+        <th>Cover Image</th>
+        <th (click)="setSortField('description')">Description</th>
+        <th (click)="setSortField('isAvailable')">Availability</th>
+        <th (click)="setSortField('averageRating')">Average Rating</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let book of filteredBooks" (click)="onSelectBook(book)">
+        <td>{{ book.title }}</td>
+        <td>{{ book.author }}</td>
+        <td><img [src]="book.coverImageUrl" alt="{{ book.title }} cover" width="50"></td>
+        <td>{{ book.description }}</td>
+        <td>{{ book.isAvailable ? 'Available' : 'Not Available' }}</td>
+        <td>{{ book.averageRating | number:'1.1-1' }}</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
 
 <div *ngIf="selectedBook$ | async as selectedBook">
   <app-book-details [book]="selectedBook"></app-book-details>
