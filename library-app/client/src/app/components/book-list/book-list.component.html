@@ -30,6 +30,7 @@
         <th (click)="setSortField('description')">Description</th>
         <th (click)="setSortField('isAvailable')">Availability</th>
         <th (click)="setSortField('averageRating')">Average Rating</th>
+        <th>Checkout</th>
       </tr>
     </thead>
     <tbody>
@@ -40,6 +41,10 @@
         <td>{{ book.description }}</td>
         <td>{{ book.isAvailable ? 'Available' : 'Not Available' }}</td>
         <td>{{ book.averageRating | number:'1.1-1' }}</td>
+        <td>
+          <button (click)="checkoutBook(book)" [hidden]="!book.isAvailable">Checkout</button>
+          <p [hidden]="book.isAvailable">Not available</p>
+        </td>
       </tr>
     </tbody>
   </table>

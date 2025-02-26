@@ -88,7 +88,20 @@ namespace library_app.Controllers
                 expires: DateTime.Now.AddMinutes(30),
                 signingCredentials: creds);
 
-            return Ok(new JwtSecurityTokenHandler().WriteToken(token));
+            var tokenString = new JwtSecurityTokenHandler().WriteToken(token);
+
+            var response = new
+            {
+                token = tokenString,
+                user = new
+                {
+                    id = user.Id,
+                    userName = user.UserName,
+                    role = user.Role
+                }
+            };
+
+            return Ok(response);
         }
 
         [HttpGet("{id}")]

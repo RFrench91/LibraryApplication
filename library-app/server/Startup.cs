@@ -27,7 +27,6 @@ public class Startup
             .AddEntityFrameworkStores<LibraryContext>()
             .AddDefaultTokenProviders();
 
-
         services.AddScoped<BookService>();
 
         services.AddControllers()
@@ -49,7 +48,7 @@ public class Startup
                 });
         });
 
-            services.AddAuthentication(options =>
+        services.AddAuthentication(options =>
         {
             options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
             options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
@@ -71,7 +70,8 @@ public class Startup
         services.AddControllers();
         services.AddScoped<UserService>();
 
-                services.AddSwaggerGen(c =>
+
+        services.AddSwaggerGen(c =>
         {
             c.SwaggerDoc("v1", new OpenApiInfo { Title = "Library API", Version = "v1" });
             c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
@@ -109,7 +109,12 @@ public class Startup
         app.UseAuthentication();
         app.UseAuthorization();
 
-        // Handle preflight requests
+        app.UseEndpoints(endpoints =>
+        {
+            endpoints.MapControllers();
+        });
+
+             // Handle preflight requests
         app.Use(async (context, next) =>
         {
             if (context.Request.Method == "OPTIONS")
@@ -124,11 +129,6 @@ public class Startup
             {
                 await next();
             }
-        });
-
-        app.UseEndpoints(endpoints =>
-        {
-            endpoints.MapControllers();
         });
 
         app.UseSwagger();
