@@ -1,37 +1,68 @@
-﻿using Microsoft.EntityFrameworkCore.Migrations;
+﻿using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore.Migrations;
+using System;
+using library_app.Models;
 
 #nullable disable
 
 namespace libraryapp.Migrations
 {
-    /// <inheritdoc />
-    public partial class SeedData : Migration
+    public partial class SeedDataMigration2 : Migration
     {
-        /// <inheritdoc />
+        private static readonly PasswordHasher<User> _passwordHasher = new PasswordHasher<User>();
+
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.Sql("DELETE FROM Books");
-            migrationBuilder.Sql("DELETE FROM Users");
-            string hashedPassword = BCrypt.Net.BCrypt.HashPassword("password");
+            var customer = new User
+            {
+                Id = "1",
+                UserName = "customer1",
+                NormalizedUserName = "CUSTOMER1",
+                Email = "customer1@example.com",
+                NormalizedEmail = "CUSTOMER1@EXAMPLE.COM",
+                EmailConfirmed = true,
+                Role = "Customer",
+                SecurityStamp = Guid.NewGuid().ToString(),
+                ConcurrencyStamp = Guid.NewGuid().ToString(),
+                PhoneNumber = "5555555555",
+                PhoneNumberConfirmed = false,
+                TwoFactorEnabled = false,
+                LockoutEnd = null,
+                LockoutEnabled = false,
+                AccessFailedCount = 0
+            };
+            customer.PasswordHash = _passwordHasher.HashPassword(customer, "password");
+
+            var librarian = new User
+            {
+                Id = "2",
+                UserName = "librarian1",
+                NormalizedUserName = "LIBRARIAN1",
+                Email = "librarian1@example.com",
+                NormalizedEmail = "LIBRARIAN1@EXAMPLE.COM",
+                EmailConfirmed = true,
+                Role = "Librarian",
+                SecurityStamp = Guid.NewGuid().ToString(),
+                ConcurrencyStamp = Guid.NewGuid().ToString(),
+                PhoneNumber = "5555555555",
+                PhoneNumberConfirmed = false,
+                TwoFactorEnabled = false,
+                LockoutEnd = null,
+                LockoutEnabled = false,
+                AccessFailedCount = 0
+            };
+            librarian.PasswordHash = _passwordHasher.HashPassword(librarian, "password");
 
             migrationBuilder.InsertData(
-                table: "Users",
-                columns: new[] { "Id", "Username", "Password", "Role" },
+                table: "AspNetUsers",
+                columns: new[] { "Id", "UserName", "NormalizedUserName", "Email", "NormalizedEmail", "EmailConfirmed", "PasswordHash", "SecurityStamp", "ConcurrencyStamp", "PhoneNumber", "PhoneNumberConfirmed", "TwoFactorEnabled", "LockoutEnd", "LockoutEnabled", "AccessFailedCount", "Role" },
                 values: new object[,]
                 {
-                    { 1, "user1", hashedPassword, "Customer" },
-                    { 2, "user2", hashedPassword, "Customer" },
-                    { 3, "user3", hashedPassword, "Customer" },
-                    { 4, "user4", hashedPassword, "Customer" },
-                    { 5, "user5", hashedPassword, "Customer" },
-                    { 6, "user6", hashedPassword, "Customer" },
-                    { 7, "user7", hashedPassword, "Customer" },
-                    { 8, "user8", hashedPassword, "Customer" },
-                    { 9, "user9", hashedPassword, "Customer" },
-                    { 10, "user10", hashedPassword, "Customer" }
+                    { customer.Id, customer.UserName, customer.NormalizedUserName, customer.Email, customer.NormalizedEmail, customer.EmailConfirmed, customer.PasswordHash, customer.SecurityStamp, customer.ConcurrencyStamp, customer.PhoneNumber, customer.PhoneNumberConfirmed, customer.TwoFactorEnabled, customer.LockoutEnd, customer.LockoutEnabled, customer.AccessFailedCount, customer.Role },
+                    { librarian.Id, librarian.UserName, librarian.NormalizedUserName, librarian.Email, librarian.NormalizedEmail, librarian.EmailConfirmed, librarian.PasswordHash, librarian.SecurityStamp, librarian.ConcurrencyStamp, librarian.PhoneNumber, librarian.PhoneNumberConfirmed, librarian.TwoFactorEnabled, librarian.LockoutEnd, librarian.LockoutEnabled, librarian.AccessFailedCount, librarian.Role }
                 });
 
-   migrationBuilder.InsertData(
+            migrationBuilder.InsertData(
                 table: "Books",
                 columns: new[] { "Id", "Title", "Author", "ISBN", "PublishedDate", "Genre", "CoverImageUrl", "NumberOfPages", "Publisher", "Description" },
                 values: new object[,]
@@ -56,15 +87,16 @@ namespace libraryapp.Migrations
                     { 18, "Book 18", "Author 18", "1234567890140", new DateTime(2020, 1, 1), "Fiction", "https://example.com/book18.jpg", 420, "Publisher 18", "Description for Book 18" },
                     { 19, "Book 19", "Author 19", "1234567890141", new DateTime(2020, 1, 1), "Fiction", "https://example.com/book19.jpg", 430, "Publisher 19", "Description for Book 19" },
                     { 20, "Book 20", "Author 20", "1234567890142", new DateTime(2020, 1, 1), "Fiction", "https://example.com/book20.jpg", 440, "Publisher 20", "Description for Book 20" }
-        });}
+                });
+        }
 
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
-              migrationBuilder.DeleteData(
-                table: "Users",
+            migrationBuilder.DeleteData(
+                table: "AspNetUsers",
                 keyColumn: "Id",
-                keyValues: new object[] { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 });
+                keyValues: new object[] { "1", "2" });
 
             migrationBuilder.DeleteData(
                 table: "Books",

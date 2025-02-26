@@ -1,19 +1,22 @@
 using library_app.Models;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using Microsoft.AspNetCore.Identity;
 
 namespace library_app.Data
 {
-    public class LibraryContext : DbContext
+    public class LibraryContext : IdentityDbContext<User>
     {
         public LibraryContext(DbContextOptions<LibraryContext> options) : base(options) { }
 
         public DbSet<Book> Books { get; set; }
         public DbSet<Checkout> Checkouts { get; set; }
-        public DbSet<User> Users { get; set; }
         public DbSet<Review> Reviews { get; set; } // Add this line
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+            base.OnModelCreating(modelBuilder);
+
             modelBuilder.Entity<Book>()
                 .HasMany(b => b.Checkouts)
                 .WithOne(c => c.Book)
@@ -28,6 +31,11 @@ namespace library_app.Data
                 .HasMany(u => u.Checkouts)
                 .WithOne(c => c.User)
                 .HasForeignKey(c => c.UserId);
+
+            modelBuilder.Entity<IdentityUserLogin<string>>().HasKey(l => new { l.LoginProvider, l.ProviderKey });
+            modelBuilder.Entity<IdentityUserRole<string>>().HasKey(r => new { r.UserId, r.RoleId });
+            modelBuilder.Entity<IdentityUserToken<string>>().HasKey(t => new { t.UserId, t.LoginProvider, t.Name });
+
         }
     }
 }

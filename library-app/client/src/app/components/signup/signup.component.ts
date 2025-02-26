@@ -17,7 +17,7 @@ export class SignupComponent {
   constructor(private authService: AuthService, private router: Router) { }
 
   signup(): void {
-    const newUser: User = { id: 0, username: this.username, password: this.password, role: this.role };
+    const newUser: User = { id: '', userName: this.username, password: this.password, role: this.role };
     this.authService.signup(newUser).subscribe(user => {
       if (user) {
         this.authService.setCurrentUser(user);

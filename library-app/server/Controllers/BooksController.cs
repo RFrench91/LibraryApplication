@@ -6,11 +6,13 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 
 namespace library_app.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize]
     public class BooksController : ControllerBase
     {
         private readonly BookService _bookService;
@@ -161,7 +163,7 @@ namespace library_app.Controllers
                 {
                     Id = checkout.Id,
                     BookTitle = checkout.Book.Title,
-                    Username = checkout.User.Username,
+                    Username = checkout.User.UserName,
                     CheckoutDate = checkout.CheckoutDate,
                     DueDate = checkout.DueDate
                 };
@@ -182,7 +184,7 @@ namespace library_app.Controllers
             {
                 Id = c.Id,
                 BookTitle = c.Book.Title,
-                Username = c.User.Username,
+                Username = c.User.UserName,
                 CheckoutDate = c.CheckoutDate,
                 DueDate = c.DueDate
             }).ToList();
@@ -191,14 +193,14 @@ namespace library_app.Controllers
         }
 
         [HttpGet("checkedout/{userId}")]
-        public async Task<ActionResult<IEnumerable<CheckoutDto>>> GetCheckedOutBooksByUser(int userId)
+        public async Task<ActionResult<IEnumerable<CheckoutDto>>> GetCheckedOutBooksByUser(string userId)
         {
             var checkouts = await _bookService.GetCheckedOutBooksByUserAsync(userId);
             var checkoutDtos = checkouts.Select(c => new CheckoutDto
             {
                 Id = c.Id,
                 BookTitle = c.Book.Title,
-                Username = c.User.Username,
+                Username = c.User.UserName,
                 CheckoutDate = c.CheckoutDate,
                 DueDate = c.DueDate
             }).ToList();
@@ -250,7 +252,7 @@ namespace library_app.Controllers
                 Id = r.Id,
                 BookId = r.BookId,
                 UserId = r.UserId,
-                Username = r.User.Username,
+                Username = r.User.UserName,
                 Rating = r.Rating,
                 Comment = r.Comment,
                 CreatedAt = r.CreatedAt

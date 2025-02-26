@@ -66,7 +66,7 @@ export class BookService {
     );
   }
 
-  checkoutBook(bookId: number, userId: number): Observable<Checkout> {
+  checkoutBook(bookId: number, userId: string): Observable<Checkout> {
     return this.http.post<Checkout>(`${this.apiUrl}/${bookId}/checkout`, { userId }).pipe(
       catchError(this.handleError.bind(this))
     );
@@ -78,7 +78,7 @@ export class BookService {
     );
   }
 
-  getCheckedOutBooksByUser(userId: number): Observable<Checkout[]> {
+  getCheckedOutBooksByUser(userId: string): Observable<Checkout[]> {
     return this.http.get<Checkout[]>(`${this.apiUrl}/checkedout/${userId}`).pipe(
       catchError(this.handleError.bind(this))
     );

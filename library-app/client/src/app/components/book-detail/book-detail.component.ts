@@ -17,7 +17,7 @@ export class BookDetailsComponent implements OnInit, OnChanges {
   @Input() book: Book | null = null;
   private reviewsSubject = new BehaviorSubject<Review[]>([]);
   reviews$: Observable<Review[]> = this.reviewsSubject.asObservable();
-  newReview: Review = { id: 0, bookId: 0, userId: 0, username: '', rating: 0, comment: '', createdAt: new Date() };
+  newReview: Review = { id: 0, bookId: 0, userId: '', username: '', rating: 0, comment: '', createdAt: new Date() };
   currentUser: User | null = null;
 
   constructor(
@@ -52,7 +52,7 @@ export class BookDetailsComponent implements OnInit, OnChanges {
   addReview(): void {
     if (this.currentUser && this.book) {
       this.newReview.userId = this.currentUser.id;
-      this.newReview.username = this.currentUser.username;
+      this.newReview.username = this.currentUser.userName;
       this.newReview.bookId = this.book.id;
       this.newReview.createdAt = new Date();
       this.bookService.addReview(this.newReview.bookId, this.newReview).pipe(
@@ -68,7 +68,7 @@ export class BookDetailsComponent implements OnInit, OnChanges {
               this.book!.averageRating = book.averageRating;
             }
           });
-          this.newReview = { id: 0, bookId: this.newReview.bookId, userId: 0, username: '', rating: 0, comment: '', createdAt: new Date() };
+          this.newReview = { id: 0, bookId: this.newReview.bookId, userId: '', username: '', rating: 0, comment: '', createdAt: new Date() };
         }
       });
     }

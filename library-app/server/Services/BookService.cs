@@ -86,7 +86,7 @@ namespace library_app.Services
             return book?.IsAvailable ?? false;
         }
 
-        public async Task<Checkout> CheckoutBookAsync(int bookId, int userId)
+        public async Task<Checkout> CheckoutBookAsync(int bookId, string userId)
         {
             var book = await _context.Books.Include(b => b.Checkouts).FirstOrDefaultAsync(b => b.Id == bookId);
             if (book == null || !book.IsAvailable)
@@ -122,7 +122,7 @@ namespace library_app.Services
             .ToListAsync();
     }
 
-    public async Task<List<Checkout>> GetCheckedOutBooksByUserAsync(int userId)
+    public async Task<List<Checkout>> GetCheckedOutBooksByUserAsync(string userId)
     {
         return await _context.Checkouts
             .Include(c => c.Book)

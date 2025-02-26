@@ -28,7 +28,7 @@ export class CheckedOutBooksComponent implements OnInit {
     });
   }
 
-  loadCheckedOutBooks(userId: number): void {
+  loadCheckedOutBooks(userId: string): void {
     this.bookService.getCheckedOutBooksByUser(userId).subscribe(checkouts => {
       this.checkouts = checkouts;
     });
