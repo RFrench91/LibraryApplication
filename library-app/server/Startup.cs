@@ -7,6 +7,7 @@ using library_app.Data;
 using library_app.Services;
 using library_app.Models;
 using System.Text.Json.Serialization;
+using Microsoft.OpenApi.Models;
 
 public class Startup
 {
@@ -69,6 +70,30 @@ public class Startup
 
         services.AddControllers();
         services.AddScoped<UserService>();
+
+                services.AddSwaggerGen(c =>
+        {
+            c.SwaggerDoc("v1", new OpenApiInfo { Title = "Library API", Version = "v1" });
+            c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+            {
+                In = ParameterLocation.Header,
+                Description = "Please enter into field the word 'Bearer' followed by a space and the JWT value",
+                Name = "Authorization",
+                Type = SecuritySchemeType.ApiKey,
+                Scheme = "Bearer"
+            });
+            c.AddSecurityRequirement(new OpenApiSecurityRequirement {
+                {
+                    new OpenApiSecurityScheme {
+                        Reference = new OpenApiReference {
+                            Type = ReferenceType.SecurityScheme,
+                            Id = "Bearer"
+                        }
+                    },
+                    new string[] {}
+                }
+            });
+        });
     }
 
     public void Configure(IApplicationBuilder app, IWebHostEnvironment env, LibraryContext context)
@@ -104,6 +129,12 @@ public class Startup
         app.UseEndpoints(endpoints =>
         {
             endpoints.MapControllers();
+        });
+
+        app.UseSwagger();
+        app.UseSwaggerUI(c =>
+        {
+            c.SwaggerEndpoint("/swagger/v1/swagger.json", "Library API V1");
         });
 
         // Ensure the database is created and seeded

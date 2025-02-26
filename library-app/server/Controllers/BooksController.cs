@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
+using Swashbuckle.AspNetCore.Annotations;
 
 namespace library_app.Controllers
 {
@@ -23,6 +24,7 @@ namespace library_app.Controllers
         }
 
         [HttpGet]
+        [SwaggerOperation(Summary = "Get all books", Description = "Retrieve a list of all books")]
         public async Task<ActionResult<IEnumerable<BookDto>>> GetBooks([FromQuery] string? title, [FromQuery] string? author, [FromQuery] bool? available)
         {
             var books = await _bookService.GetBooksAsync();
@@ -58,6 +60,7 @@ namespace library_app.Controllers
         }
 
         [HttpGet("random")]
+        [SwaggerOperation(Summary = "Get random books", Description = "Retrieve a list of random books")]
         public async Task<ActionResult<IEnumerable<BookDto>>> GetRandomBooks([FromQuery] int count = 5)
         {
             var books = await _bookService.GetBooksAsync();
@@ -79,6 +82,7 @@ namespace library_app.Controllers
         }
 
         [HttpGet("{id}")]
+        [SwaggerOperation(Summary = "Get book by ID", Description = "Retrieve a book by its ID")]
         public async Task<ActionResult<BookDto>> GetBookById(int id)
         {
             var book = await _bookService.GetBookByIdAsync(id);
@@ -103,6 +107,7 @@ namespace library_app.Controllers
         }
 
         [HttpGet("{id}/availability")]
+        [SwaggerOperation(Summary = "Check book availability", Description = "Check if a book is available")]
         public async Task<ActionResult<bool>> IsBookAvailable(int id)
         {
             var isAvailable = await _bookService.IsBookAvailableAsync(id);
@@ -110,6 +115,7 @@ namespace library_app.Controllers
         }
 
         [HttpPost]
+        [SwaggerOperation(Summary = "Add a new book", Description = "Add a new book to the library")]
         public async Task<ActionResult<Book>> AddBook([FromBody] Book book)
         {
             var addedBook = await _bookService.AddBookAsync(book);
@@ -117,6 +123,7 @@ namespace library_app.Controllers
         }
 
         [HttpPut("{id}")]
+        [SwaggerOperation(Summary = "Update a book", Description = "Update an existing book")]
         public async Task<IActionResult> UpdateBook(int id, [FromBody] Book book)
         {
             if (id != book.Id)
@@ -136,6 +143,7 @@ namespace library_app.Controllers
         }
 
         [HttpDelete("{id}")]
+        [SwaggerOperation(Summary = "Delete a book", Description = "Delete a book from the library")]
         public async Task<IActionResult> DeleteBook(int id)
         {
             try
@@ -150,6 +158,7 @@ namespace library_app.Controllers
         }
 
         [HttpPost("{id}/checkout")]
+        [SwaggerOperation(Summary = "Checkout a book", Description = "Checkout a book from the library")]
         public async Task<ActionResult<CheckoutDto>> CheckoutBook(int id, [FromBody] CheckoutRequestDto request)
         {
             try
@@ -174,9 +183,10 @@ namespace library_app.Controllers
             {
                 return BadRequest(ex.Message);
             }
-        } 
-        
+        }
+
         [HttpGet("checkedout")]
+        [SwaggerOperation(Summary = "Get checked out books", Description = "Retrieve a list of all checked out books")]
         public async Task<ActionResult<IEnumerable<CheckoutDto>>> GetCheckedOutBooks()
         {
             var checkouts = await _bookService.GetCheckedOutBooksAsync();
@@ -193,6 +203,7 @@ namespace library_app.Controllers
         }
 
         [HttpGet("checkedout/{userId}")]
+        [SwaggerOperation(Summary = "Get checked out books by user", Description = "Retrieve a list of all checked out books by a specific user")]
         public async Task<ActionResult<IEnumerable<CheckoutDto>>> GetCheckedOutBooksByUser(string userId)
         {
             var checkouts = await _bookService.GetCheckedOutBooksByUserAsync(userId);
@@ -209,6 +220,7 @@ namespace library_app.Controllers
         }
 
         [HttpPost("return")]
+        [SwaggerOperation(Summary = "Return a book", Description = "Return a checked out book")]
         public async Task<IActionResult> ReturnBook([FromBody] int checkoutId)
         {
             try
@@ -223,6 +235,7 @@ namespace library_app.Controllers
         }
 
         [HttpPost("{id}/reviews")]
+        [SwaggerOperation(Summary = "Add a review", Description = "Add a review for a book")]
         public async Task<ActionResult<ReviewDto>> AddReview(int id, [FromBody] ReviewDto reviewDto)
         {
             var review = new Review
@@ -231,7 +244,7 @@ namespace library_app.Controllers
                 UserId = reviewDto.UserId,
                 Rating = reviewDto.Rating,
                 Comment = reviewDto.Comment,
-                 CreatedAt = DateTime.UtcNow
+                CreatedAt = DateTime.UtcNow
             };
 
             await _bookService.AddReviewAsync(review);
@@ -243,6 +256,7 @@ namespace library_app.Controllers
         }
 
         [HttpGet("{id}/reviews")]
+        [SwaggerOperation(Summary = "Get reviews", Description = "Retrieve a list of all reviews for a book")]
         public async Task<ActionResult<IEnumerable<ReviewDto>>> GetReviews(int id)
         {
             var reviews = await _bookService.GetReviewsAsync(id);

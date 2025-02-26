@@ -1,14 +1,16 @@
 using Microsoft.AspNetCore.Mvc;
-using library_app.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
-using Microsoft.IdentityModel.Tokens;
+using System;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Authorization; 
+using Microsoft.IdentityModel.Tokens;
+using library_app.Models;
+using library_app.Models.Dto;
+using Swashbuckle.AspNetCore.Annotations;
 
 namespace library_app.Controllers
 {
@@ -30,6 +32,7 @@ namespace library_app.Controllers
         }
 
         [HttpPost("register")]
+        [SwaggerOperation(Summary = "Register a new user", Description = "Register a new user with the provided details")]
         public async Task<ActionResult<User>> Register(User user)
         {
             var existingUser = await _userManager.FindByNameAsync(user.UserName);
@@ -50,6 +53,7 @@ namespace library_app.Controllers
         }
 
         [HttpPost("login")]
+        [SwaggerOperation(Summary = "Login a user", Description = "Login a user with the provided credentials")]
         public async Task<ActionResult<string>> Login(LoginRequest loginRequest)
         {
             _logger.LogInformation("Login attempt for user: {Username}", loginRequest.Username);
@@ -68,12 +72,27 @@ namespace library_app.Controllers
                 return Unauthorized("Invalid username or password");
             }
 
-            var token = GenerateJwtToken(user);
-            return Ok(new { token, user });
+            var claims = new[]
+            {
+                new Claim(JwtRegisteredClaimNames.Sub, user.UserName),
+                new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
+            };
+
+            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["Jwt:Key"]));
+            var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
+
+            var token = new JwtSecurityToken(
+                issuer: _configuration["Jwt:Issuer"],
+                audience: _configuration["Jwt:Audience"],
+                claims: claims,
+                expires: DateTime.Now.AddMinutes(30),
+                signingCredentials: creds);
+
+            return Ok(new JwtSecurityTokenHandler().WriteToken(token));
         }
 
         [HttpGet("{id}")]
-        [Authorize]
+        [SwaggerOperation(Summary = "Get user by ID", Description = "Retrieve a user by their ID")]
         public async Task<ActionResult<User>> GetUser(string id)
         {
             var user = await _userManager.FindByIdAsync(id);
@@ -81,30 +100,8 @@ namespace library_app.Controllers
             {
                 return NotFound();
             }
+
             return Ok(user);
-        }
-
-        private string GenerateJwtToken(User user)
-        {
-            var claims = new[]
-            {
-                new Claim(JwtRegisteredClaimNames.Sub, user.UserName),
-                new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
-                new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
-                new Claim(ClaimTypes.Role, user.Role)
-            };
-
-            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["Jwt:Key"]));
-            var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
-
-            var token = new JwtSecurityToken(
-                _configuration["Jwt:Issuer"],
-                _configuration["Jwt:Issuer"],
-                claims,
-                expires: DateTime.Now.AddMinutes(30),
-                signingCredentials: creds);
-
-            return new JwtSecurityTokenHandler().WriteToken(token);
         }
     }
 }
