@@ -4,6 +4,7 @@ using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using library_app.Data;
 using library_app.Services;
+using System.Text.Json.Serialization;
 
 public class Startup
 {
@@ -22,16 +23,21 @@ public class Startup
         services.AddScoped<UserService>();
         services.AddScoped<BookService>();
 
-        services.AddControllers();
+        services.AddControllers()
+            .AddJsonOptions(options =>
+            {
+                options.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles;
+            });
 
         services.AddCors(options =>
         {
-            options.AddPolicy("AllowAllOrigins",
+            options.AddPolicy("AllowSpecificOrigins",
                 builder =>
                 {
-                    builder.AllowAnyOrigin()
+                    builder.WithOrigins("http://localhost:4200")
                            .AllowAnyMethod()
-                           .AllowAnyHeader();
+                           .AllowAnyHeader()
+                           .AllowCredentials();
                 });
         });
 
@@ -62,7 +68,7 @@ public class Startup
 
         app.UseHttpsRedirection();
         app.UseRouting();
-        app.UseCors("AllowAllOrigins");
+        app.UseCors("AllowSpecificOrigins");
         app.UseAuthentication();
         app.UseAuthorization();
 
@@ -71,7 +77,7 @@ public class Startup
         {
             if (context.Request.Method == "OPTIONS")
             {
-                context.Response.Headers.Add("Access-Control-Allow-Origin", "*");
+                context.Response.Headers.Add("Access-Control-Allow-Origin", "http://localhost:4200");
                 context.Response.Headers.Add("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
                 context.Response.Headers.Add("Access-Control-Allow-Headers", "Content-Type, Authorization");
                 context.Response.StatusCode = 204;

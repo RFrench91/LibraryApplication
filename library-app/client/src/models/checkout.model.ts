@@ -1,11 +1,7 @@
-import { Book } from './book.model';
-
 export interface Checkout {
-  id: number;
-  bookId: number;
-  userId: number;
-  checkoutDate: Date;
-  dueDate: Date;
-  isReturned: boolean;
-  book: Book;
-}
+    id: number;
+    bookId: number;
+    userId: number;
+    checkoutDate: Date;
+    returnDate?: Date; // Optional to indicate if the book has been returned
+  }

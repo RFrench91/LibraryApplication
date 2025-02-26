@@ -6,5 +6,6 @@ namespace library_app.Models
         public string Username { get; set; }
         public string Password { get; set; }
         public string Role { get; set; }
+        public ICollection<Checkout> Checkouts { get; set; } = new List<Checkout>();
     }
 }

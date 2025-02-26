@@ -10,9 +10,28 @@
   <input id="author" (input)="onAuthorFilterChange($event.target.value)" />
 </div>
 
+<div>
+  <label for="sort">Sort by:</label>
+  <select id="sort" (change)="onSortFieldChange($event.target.value)">
+    <option value="">None</option>
+    <option value="title">Title</option>
+    <option value="author">Author</option>
+  </select>
+</div>
+
+<div>
+  <label for="availability">Show Available Only:</label>
+  <input id="availability" type="checkbox" [(ngModel)]="showAvailable" (change)="onAvailabilityChange(showAvailable)" />
+</div>
+
 <ul>
   <li *ngFor="let book of books" (click)="onSelectBook(book)">
     {{ book.title }} by {{ book.author }}
-    <button *ngIf="currentUser?.role === 'Customer'" (click)="isBookAvailable(book)">Check Out</button>
+    <button *ngIf="currentUser?.role === 'Customer' && availabilityMap[book.id]">Check Out</button>
+    <p *ngIf="!availabilityMap[book.id]">Checked Out</p>
   </li>
 </ul>
+
+<div *ngIf="selectedBook$ | async as selectedBook">
+  <app-book-detail [book]="selectedBook"></app-book-detail>
+</div>

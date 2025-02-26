@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 using library_app.Models;
+using library_app.Models.Dto;
 using library_app.Services;
 using System;
 using System.Collections.Generic;
@@ -20,7 +21,7 @@ namespace library_app.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Book>>> GetBooks([FromQuery] string title, [FromQuery] string author)
+        public async Task<ActionResult<IEnumerable<BookDto>>> GetBooks([FromQuery] string? title, [FromQuery] string? author, [FromQuery] bool? available)
         {
             var books = await _bookService.GetBooksAsync();
 
@@ -34,26 +35,66 @@ namespace library_app.Controllers
                 books = books.Where(b => b.Author.Contains(author, StringComparison.OrdinalIgnoreCase)).ToList();
             }
 
-            return Ok(books);
+            if (available.HasValue)
+            {
+                books = books.Where(b => b.IsAvailable == available.Value).ToList();
+            }
+
+            var bookDtos = books.Select(b => new BookDto
+            {
+                Id = b.Id,
+                Title = b.Title,
+                Author = b.Author,
+                ISBN = b.ISBN,
+                PublishedDate = b.PublishedDate,
+                Genre = b.Genre,
+                IsAvailable = b.IsAvailable
+            }).ToList();
+
+            return Ok(bookDtos);
         }
 
         [HttpGet("random")]
-        public async Task<ActionResult<IEnumerable<Book>>> GetRandomBooks([FromQuery] int count = 5)
+        public async Task<ActionResult<IEnumerable<BookDto>>> GetRandomBooks([FromQuery] int count = 5)
         {
             var books = await _bookService.GetBooksAsync();
             books = books.OrderBy(b => Guid.NewGuid()).Take(count).ToList();
-            return Ok(books);
+
+            var bookDtos = books.Select(b => new BookDto
+            {
+                Id = b.Id,
+                Title = b.Title,
+                Author = b.Author,
+                ISBN = b.ISBN,
+                PublishedDate = b.PublishedDate,
+                Genre = b.Genre,
+                IsAvailable = b.IsAvailable
+            }).ToList();
+
+            return Ok(bookDtos);
         }
 
         [HttpGet("{id}")]
-        public async Task<ActionResult<Book>> GetBookById(int id)
+        public async Task<ActionResult<BookDto>> GetBookById(int id)
         {
             var book = await _bookService.GetBookByIdAsync(id);
             if (book == null)
             {
                 return NotFound();
             }
-            return Ok(book);
+
+            var bookDto = new BookDto
+            {
+                Id = book.Id,
+                Title = book.Title,
+                Author = book.Author,
+                ISBN = book.ISBN,
+                PublishedDate = book.PublishedDate,
+                Genre = book.Genre,
+                IsAvailable = book.IsAvailable
+            };
+
+            return Ok(bookDto);
         }
 
         [HttpGet("{id}/availability")]

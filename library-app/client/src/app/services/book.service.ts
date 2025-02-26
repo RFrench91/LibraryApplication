@@ -1,8 +1,10 @@
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpParams } from '@angular/common/http';
-import { Observable } from 'rxjs';
+import { HttpClient, HttpParams, HttpErrorResponse } from '@angular/common/http';
+import { Observable, throwError } from 'rxjs';
+import { catchError } from 'rxjs/operators';
 import { Book } from '../../models/book.model';
 import { Checkout } from '../../models/checkout.model';
+import { LoggingService } from './logging.service';
 
 @Injectable({
   providedIn: 'root'
@@ -10,9 +12,15 @@ import { Checkout } from '../../models/checkout.model';
 export class BookService {
   private apiUrl = 'http://localhost:5000/api/books'; // Update with your API URL
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient, private loggingService: LoggingService) {}
 
-  getBooks(title?: string, author?: string): Observable<Book[]> {
+  getRandomBooks(): Observable<Book[]> {
+    return this.http.get<Book[]>(`${this.apiUrl}/random`).pipe(
+      catchError(this.handleError.bind(this))
+    );
+  }
+
+  getBooks(title: string, author: string, available: boolean | null): Observable<Book[]> {
     let params = new HttpParams();
     if (title) {
       params = params.set('title', title);
@@ -20,30 +28,46 @@ export class BookService {
     if (author) {
       params = params.set('author', author);
     }
-    return this.http.get<Book[]>(this.apiUrl, { params });
-  }
-
-  getRandomBooks(count: number = 5): Observable<Book[]> {
-    return this.http.get<Book[]>(`${this.apiUrl}/random?count=${count}`);
+    if (available !== null) {
+      params = params.set('available', available.toString());
+    }
+    return this.http.get<Book[]>(this.apiUrl, { params }).pipe(
+      catchError(this.handleError.bind(this))
+    );
   }
 
   isBookAvailable(bookId: number): Observable<boolean> {
-    return this.http.get<boolean>(`${this.apiUrl}/${bookId}/availability`);
+    return this.http.get<boolean>(`${this.apiUrl}/${bookId}/availability`).pipe(
+      catchError(this.handleError.bind(this))
+    );
   }
 
-  checkoutBook(bookId: number, userId: number): Observable<Checkout> {
-    return this.http.post<Checkout>(`${this.apiUrl}/${bookId}/checkout`, userId);
+  checkoutBook(bookId: number, userId: number): Observable<void> {
+    return this.http.post<void>(`${this.apiUrl}/${bookId}/checkout`, { userId }).pipe(
+      catchError(this.handleError.bind(this))
+    );
   }
 
   getCheckedOutBooks(): Observable<Checkout[]> {
-    return this.http.get<Checkout[]>(`${this.apiUrl}/checkedout`);
+    return this.http.get<Checkout[]>(`${this.apiUrl}/checkedout`).pipe(
+      catchError(this.handleError.bind(this))
+    );
   }
 
   getCheckedOutBooksByUser(userId: number): Observable<Checkout[]> {
-    return this.http.get<Checkout[]>(`${this.apiUrl}/checkedout/${userId}`);
+    return this.http.get<Checkout[]>(`${this.apiUrl}/checkedout/${userId}`).pipe(
+      catchError(this.handleError.bind(this))
+    );
   }
 
   returnBook(checkoutId: number): Observable<void> {
-    return this.http.post<void>(`${this.apiUrl}/return`, checkoutId);
+    return this.http.post<void>(`${this.apiUrl}/return`, checkoutId).pipe(
+      catchError(this.handleError.bind(this))
+    );
+  }
+
+  private handleError(error: HttpErrorResponse): Observable<never> {
+    this.loggingService.logError(`Error occurred: ${error.message}`);
+    return throwError('Something bad happened; please try again later.');
   }
 }

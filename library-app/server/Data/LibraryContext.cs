@@ -1,7 +1,5 @@
-// filepath: /Users/richardfrench/Documents/git/library-app/server/Data/LibraryContext.cs
-using Microsoft.EntityFrameworkCore;
 using library_app.Models;
-using System.Collections.Generic;
+using Microsoft.EntityFrameworkCore;
 
 namespace library_app.Data
 {
@@ -10,12 +8,20 @@ namespace library_app.Data
         public LibraryContext(DbContextOptions<LibraryContext> options) : base(options) { }
 
         public DbSet<Book> Books { get; set; }
+        public DbSet<Checkout> Checkouts { get; set; }
         public DbSet<User> Users { get; set; }
-        public DbSet<Checkout> Checkouts { get; set; }  
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            base.OnModelCreating(modelBuilder);
+            modelBuilder.Entity<Book>()
+                .HasMany(b => b.Checkouts)
+                .WithOne(c => c.Book)
+                .HasForeignKey(c => c.BookId);
+
+            modelBuilder.Entity<User>()
+                .HasMany(u => u.Checkouts)
+                .WithOne(c => c.User)
+                .HasForeignKey(c => c.UserId);
         }
     }
 }

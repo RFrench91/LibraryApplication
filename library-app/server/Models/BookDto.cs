@@ -1,10 +1,8 @@
 using System;
-using System.Collections.Generic;
-using System.Linq;
 
-namespace library_app.Models
+namespace library_app.Models.Dto
 {
-    public class Book
+    public class BookDto
     {
         public int Id { get; set; }
         public string Title { get; set; }
@@ -12,8 +10,6 @@ namespace library_app.Models
         public string ISBN { get; set; }
         public DateTime PublishedDate { get; set; }
         public string Genre { get; set; }
-        public ICollection<Checkout> Checkouts { get; set; } = new List<Checkout>();
-
-        public bool IsAvailable => !Checkouts.Any(c => c.ReturnDate == null);
+        public bool IsAvailable { get; set; }
     }
 }
