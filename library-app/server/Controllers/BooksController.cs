@@ -108,31 +108,62 @@ namespace library_app.Controllers
         }
 
         [HttpPost("{id}/checkout")]
-        public async Task<ActionResult<Checkout>> CheckoutBook(int id, [FromBody] int userId)
+        public async Task<ActionResult<CheckoutDto>> CheckoutBook(int id, [FromBody] CheckoutRequestDto request)
         {
             try
             {
-                var checkout = await _bookService.CheckoutBookAsync(id, userId);
-                return Ok(checkout);
+                if (request.UserId == null)
+                {
+                    return BadRequest("User ID is required.");
+                }
+                var checkout = await _bookService.CheckoutBookAsync(id, request.UserId);
+                var checkoutDto = new CheckoutDto
+                {
+                    Id = checkout.Id,
+                    BookTitle = checkout.Book.Title,
+                    Username = checkout.User.Username,
+                    CheckoutDate = checkout.CheckoutDate,
+                    DueDate = checkout.DueDate
+                };
+
+                return Ok(checkoutDto);
             }
             catch (InvalidOperationException ex)
             {
                 return BadRequest(ex.Message);
             }
-        }
-
+        } 
+        
         [HttpGet("checkedout")]
-        public async Task<ActionResult<IEnumerable<Checkout>>> GetCheckedOutBooks()
+        public async Task<ActionResult<IEnumerable<CheckoutDto>>> GetCheckedOutBooks()
         {
             var checkouts = await _bookService.GetCheckedOutBooksAsync();
-            return Ok(checkouts);
+            var checkoutDtos = checkouts.Select(c => new CheckoutDto
+            {
+                Id = c.Id,
+                BookTitle = c.Book.Title,
+                Username = c.User.Username,
+                CheckoutDate = c.CheckoutDate,
+                DueDate = c.DueDate
+            }).ToList();
+
+            return Ok(checkoutDtos);
         }
 
         [HttpGet("checkedout/{userId}")]
-        public async Task<ActionResult<IEnumerable<Checkout>>> GetCheckedOutBooksByUser(int userId)
+        public async Task<ActionResult<IEnumerable<CheckoutDto>>> GetCheckedOutBooksByUser(int userId)
         {
             var checkouts = await _bookService.GetCheckedOutBooksByUserAsync(userId);
-            return Ok(checkouts);
+            var checkoutDtos = checkouts.Select(c => new CheckoutDto
+            {
+                Id = c.Id,
+                BookTitle = c.Book.Title,
+                Username = c.User.Username,
+                CheckoutDate = c.CheckoutDate,
+                DueDate = c.DueDate
+            }).ToList();
+
+            return Ok(checkoutDtos);
         }
 
         [HttpPost("return")]

@@ -19,7 +19,11 @@ export class CheckedOutBooksComponent implements OnInit {
     this.authService.currentUser.subscribe(user => {
       this.currentUser = user;
       if (this.currentUser) {
-        this.loadCheckedOutBooks(this.currentUser.id);
+        if (this.currentUser.role === 'Librarian') {
+          this.loadAllCheckedOutBooks();
+        } else {
+          this.loadCheckedOutBooks(this.currentUser.id);
+        }
       }
     });
   }
@@ -27,6 +31,18 @@ export class CheckedOutBooksComponent implements OnInit {
   loadCheckedOutBooks(userId: number): void {
     this.bookService.getCheckedOutBooksByUser(userId).subscribe(checkouts => {
       this.checkouts = checkouts;
+    });
+  }
+
+  loadAllCheckedOutBooks(): void {
+    this.bookService.getCheckedOutBooks().subscribe(checkouts => {
+      this.checkouts = checkouts;
+    });
+  }
+
+  returnBook(checkoutId: number): void {
+    this.bookService.returnBook(checkoutId).subscribe(() => {
+      this.checkouts = this.checkouts.filter(checkout => checkout.id !== checkoutId);
     });
   }
 

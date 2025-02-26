@@ -51,35 +51,50 @@ namespace library_app.Services
             {
                 BookId = bookId,
                 UserId = userId,
-                CheckoutDate = DateTime.UtcNow
+                CheckoutDate = DateTime.UtcNow,
+                DueDate = DateTime.UtcNow.AddDays(5) // Example: 2 weeks due date
             };
+            
             _context.Checkouts.Add(checkout);
             await _context.SaveChangesAsync();
+
+            checkout = await _context.Checkouts
+                .Include(c => c.Book)
+                .Include(c => c.User)
+                .FirstOrDefaultAsync(c => c.Id == checkout.Id);
 
             return checkout;
         }
 
-        public async Task<IEnumerable<Checkout>> GetCheckedOutBooksAsync()
+   public async Task<List<Checkout>> GetCheckedOutBooksAsync()
+    {
+        return await _context.Checkouts
+            .Include(c => c.Book)
+            .Include(c => c.User)
+            .Where(c => c.ReturnDate == null)
+            .ToListAsync();
+    }
+
+    public async Task<List<Checkout>> GetCheckedOutBooksByUserAsync(int userId)
+    {
+        return await _context.Checkouts
+            .Include(c => c.Book)
+            .Include(c => c.User)
+            .Where(c => c.UserId == userId && c.ReturnDate == null)
+            .ToListAsync();
+    }
+
+    public async Task ReturnBookAsync(int checkoutId)
+    {
+        var checkout = await _context.Checkouts.FindAsync(checkoutId);
+        if (checkout == null)
         {
-            return await _context.Checkouts.Include(c => c.Book).Include(c => c.User).ToListAsync();
+            throw new InvalidOperationException("Checkout not found.");
         }
 
-        public async Task<IEnumerable<Checkout>> GetCheckedOutBooksByUserAsync(int userId)
-        {
-            return await _context.Checkouts.Include(c => c.Book).Where(c => c.UserId == userId).ToListAsync();
-        }
-
-        public async Task ReturnBookAsync(int checkoutId)
-        {
-            var checkout = await _context.Checkouts.FindAsync(checkoutId);
-            if (checkout == null)
-            {
-                throw new InvalidOperationException("Checkout not found.");
-            }
-
-            checkout.ReturnDate = DateTime.UtcNow;
-            await _context.SaveChangesAsync();
-        }
+        checkout.ReturnDate = DateTime.UtcNow;
+        await _context.SaveChangesAsync();
+    }
 
         public async Task AddReviewAsync(Review review)
         {

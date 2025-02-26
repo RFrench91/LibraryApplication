@@ -27,7 +27,7 @@
 <ul>
   <li *ngFor="let book of books" (click)="onSelectBook(book)">
     {{ book.title }} by {{ book.author }}
-    <button *ngIf="currentUser?.role === 'Customer' && availabilityMap[book.id]">Check Out</button>
+    <button *ngIf="currentUser?.role === 'Customer' && availabilityMap[book.id]" (click)="checkoutBook(book)">Check Out</button>
     <p *ngIf="!availabilityMap[book.id]">Checked Out</p>
   </li>
 </ul>

@@ -12,6 +12,6 @@
     </div>
     <button type="submit">Login</button>
   </form>
-  <a href="#" (click)="onToggleSignup()">Sign up</a>
+  <a [routerLink]="['/signup']">Sign up</a>
   <div *ngIf="errorMessage" class="error-message">{{ errorMessage }}</div>
 </div>

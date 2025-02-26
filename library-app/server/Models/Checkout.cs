@@ -10,6 +10,7 @@ namespace library_app.Models
         public int UserId { get; set; }
         public User User { get; set; }
         public DateTime CheckoutDate { get; set; }
+        public DateTime DueDate { get; set; }
         public DateTime? ReturnDate { get; set; } // Nullable to indicate if the book has been returned
     }
 }

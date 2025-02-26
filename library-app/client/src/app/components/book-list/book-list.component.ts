@@ -150,8 +150,8 @@ export class BookListComponent implements OnInit {
     if (this.currentUser && this.currentUser.role === 'Customer') {
       this.bookService.checkoutBook(book.id, this.currentUser.id).pipe(
         catchError(error => {
-          this.loggingService.logError(`Failed to check out book ${book.id}: ${error.message}`);
-          return [];
+          this.loggingService.logError(`Failed to check out book ${book.id}: ${error.message}, ${error}`);
+          return of(null); // Return an observable that emits null
         })
       ).subscribe(() => {
         alert('Book checked out successfully!');

@@ -96,6 +96,6 @@ public class Startup
         });
 
         // Ensure the database is created and seeded
-        context.Database.Migrate();
+         context.Database.Migrate();
     }
 }

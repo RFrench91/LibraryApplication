@@ -54,8 +54,8 @@ export class BookService {
     );
   }
 
-  checkoutBook(bookId: number, userId: number): Observable<void> {
-    return this.http.post<void>(`${this.apiUrl}/${bookId}/checkout`, { userId }).pipe(
+  checkoutBook(bookId: number, userId: number): Observable<Checkout> {
+    return this.http.post<Checkout>(`${this.apiUrl}/${bookId}/checkout`, { userId }).pipe(
       catchError(this.handleError.bind(this))
     );
   }

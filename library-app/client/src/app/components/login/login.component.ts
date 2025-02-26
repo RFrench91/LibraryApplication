@@ -8,17 +8,11 @@ import { AuthService } from '../../services/auth.service';
   styleUrls: ['./login.component.css']
 })
 export class LoginComponent {
-  @Output() toggleSignup = new EventEmitter<void>();
   username = '';
   password = '';
   errorMessage = '';
 
   constructor(private authService: AuthService, private router: Router) { }
-
-
-  onToggleSignup(): void {
-    this.toggleSignup.emit();
-  }
 
   login(): void {
     this.authService.login(this.username, this.password).subscribe(response => {
