@@ -14,6 +14,7 @@ import { GlobalErrorHandler } from './services/error-handler.service';
 import { LoggingService } from './services/logging.service';
 import { SearchBooksComponent } from './components/search-books/search-books.component';
 import { RouterModule } from '@angular/router';
+import { ManageBooksComponent } from './components/manage-books/manage-books.component';
 
 @NgModule({
   declarations: [
@@ -24,7 +25,8 @@ import { RouterModule } from '@angular/router';
     LoginComponent,
     SignupComponent,
     BookDetailsComponent,
-    SearchBooksComponent
+    SearchBooksComponent,
+    ManageBooksComponent
   ],
   imports: [
     BrowserModule,

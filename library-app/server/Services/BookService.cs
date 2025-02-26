@@ -33,6 +33,53 @@ namespace library_app.Services
             .FirstOrDefaultAsync(b => b.Id == id);
         }
 
+          public async Task<Book> AddBookAsync(Book book)
+    {
+        _context.Books.Add(book);
+        await _context.SaveChangesAsync();
+        return book;
+    }
+
+    public async Task<Book> UpdateBookAsync(Book book)
+    {
+        _context.Entry(book).State = EntityState.Modified;
+
+        try
+        {
+            await _context.SaveChangesAsync();
+        }
+        catch (DbUpdateConcurrencyException)
+        {
+            if (!BookExists(book.Id))
+            {
+                throw new KeyNotFoundException("Book not found.");
+            }
+            else
+            {
+                throw;
+            }
+        }
+
+        return book;
+    }
+
+    public async Task DeleteBookAsync(int id)
+    {
+        var book = await _context.Books.FindAsync(id);
+        if (book == null)
+        {
+            throw new KeyNotFoundException("Book not found.");
+        }
+
+        _context.Books.Remove(book);
+        await _context.SaveChangesAsync();
+    }
+
+    private bool BookExists(int id)
+    {
+        return _context.Books.Any(e => e.Id == id);
+    }
+
         public async Task<bool> IsBookAvailableAsync(int id)
         {
             var book = await _context.Books.Include(b => b.Checkouts).FirstOrDefaultAsync(b => b.Id == id);

@@ -13,6 +13,7 @@
       <li><a routerLink="/">Home</a></li>
       <li><a routerLink="/checked-out-books">My Checked Out Books</a></li>
       <li><a routerLink="/search-books">Search Books</a></li>
+      <li *ngIf="currentUser?.role === 'Librarian'"><a routerLink="/manage-books">Manage Books</a></li>
       <li><button (click)="logout()">Logout</button></li>
     </ul>
   </nav>

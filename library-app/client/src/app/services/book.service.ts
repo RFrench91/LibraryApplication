@@ -48,6 +48,18 @@ export class BookService {
     );
   }
 
+  updateBook(book: Book): Observable<Book> {
+    return this.http.put<Book>(`${this.apiUrl}/${book.id}`, book).pipe(
+      catchError(this.handleError.bind(this))
+    );
+  }
+
+  deleteBook(bookId: number): Observable<void> {
+    return this.http.delete<void>(`${this.apiUrl}/${bookId}`).pipe(
+      catchError(this.handleError.bind(this))
+    );
+  }
+
   isBookAvailable(bookId: number): Observable<boolean> {
     return this.http.get<boolean>(`${this.apiUrl}/${bookId}/availability`).pipe(
       catchError(this.handleError.bind(this))

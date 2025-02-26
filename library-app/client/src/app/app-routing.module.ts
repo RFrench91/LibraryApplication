@@ -7,6 +7,7 @@ import { SignupComponent } from './components/signup/signup.component';
 import { LayoutComponent } from './components/layout/layout.component';
 import { AuthGuard } from './auth.guard';
 import { SearchBooksComponent } from './components/search-books/search-books.component';
+import { ManageBooksComponent } from './components/manage-books/manage-books.component';
 
 const routes: Routes = [
   { path: 'login', component: LoginComponent },
@@ -15,6 +16,7 @@ const routes: Routes = [
     { path: '', component: BookListComponent },
     { path: 'checked-out-books', component: CheckedOutBooksComponent },
     { path: 'search-books', component: SearchBooksComponent },
+    { path: 'manage-books', component: ManageBooksComponent }, // Add the manage-books route
   ]}
 ];
 

@@ -107,6 +107,46 @@ namespace library_app.Controllers
             return Ok(isAvailable);
         }
 
+        [HttpPost]
+        public async Task<ActionResult<Book>> AddBook([FromBody] Book book)
+        {
+            var addedBook = await _bookService.AddBookAsync(book);
+            return CreatedAtAction(nameof(GetBookById), new { id = addedBook.Id }, addedBook);
+        }
+
+        [HttpPut("{id}")]
+        public async Task<IActionResult> UpdateBook(int id, [FromBody] Book book)
+        {
+            if (id != book.Id)
+            {
+                return BadRequest();
+            }
+
+            try
+            {
+                var updatedBook = await _bookService.UpdateBookAsync(book);
+                return Ok(updatedBook);
+            }
+            catch (KeyNotFoundException)
+            {
+                return NotFound();
+            }
+        }
+
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> DeleteBook(int id)
+        {
+            try
+            {
+                await _bookService.DeleteBookAsync(id);
+                return NoContent();
+            }
+            catch (KeyNotFoundException)
+            {
+                return NotFound();
+            }
+        }
+
         [HttpPost("{id}/checkout")]
         public async Task<ActionResult<CheckoutDto>> CheckoutBook(int id, [FromBody] CheckoutRequestDto request)
         {
