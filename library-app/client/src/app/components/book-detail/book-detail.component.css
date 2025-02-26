@@ -1,13 +1,28 @@
 .book-detail {
-    padding: 10px;
-    border: 1px solid #ccc;
-    margin: 10px 0;
-  }
-  
-  .book-detail h2 {
-    margin-top: 0;
-  }
-  
-  .book-detail button {
-    margin-right: 5px;
-  }
+  padding: 20px;
+  border: 1px solid #007BFF;
+  border-radius: 5px;
+  background-color: #f8f9fa;
+  margin: 20px 0;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.book-detail h2 {
+  margin-top: 0;
+  color: #007BFF;
+}
+
+.book-detail button {
+  margin-right: 10px;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 5px;
+  background-color: #007BFF;
+  color: white;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.book-detail button:hover {
+  background-color: #0056b3;
+}
