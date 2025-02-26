@@ -3,6 +3,9 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable, BehaviorSubject } from 'rxjs';
 import { tap } from 'rxjs/operators';
 import { User } from '../../models/user.model';
+import { environment } from '../../environments/environment';
+import { catchError } from 'rxjs/operators';
+import { throwError } from 'rxjs';
 
 interface LoginRequest {
   username: string;
@@ -13,7 +16,7 @@ interface LoginRequest {
   providedIn: 'root'
 })
 export class AuthService {
-  private apiUrl = 'http://localhost:5000/api/auth'; // Update with your API URL
+  private apiUrl = `${environment.apiUrl}/auth`; // Update with your API URL
   private currentUserSubject: BehaviorSubject<User | null>;
   public currentUser: Observable<User | null>;
 
@@ -38,12 +41,22 @@ export class AuthService {
             localStorage.setItem('user', JSON.stringify(response.user));
             this.currentUserSubject.next(response.user);
           }
-        })
+        }),
+        catchError(error => {
+          console.error('Login error:', error);
+          return throwError(error);
+        })      
       );
   }
 
   signup(user: User): Observable<User> {
-    return this.http.post<User>(`${this.apiUrl}/register`, user);
+    return this.http.post<User>(`${this.apiUrl}/register`, user)
+    .pipe(
+      catchError(error => {
+        console.error('Signup error:', error);
+        return throwError(error);
+      })
+    );
   }
 
   logout(): void {

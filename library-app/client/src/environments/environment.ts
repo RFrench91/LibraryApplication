@@ -1,4 +1,4 @@
-// filepath: /Users/richardfrench/Documents/git/library-app/client/src/environments/environment.ts
 export const environment = {
-    production: false
-  };
+  production: false,
+  apiUrl: 'http://localhost:5000/api'
+};

@@ -6,12 +6,13 @@ import { Book } from '../../models/book.model';
 import { Checkout } from '../../models/checkout.model';
 import { LoggingService } from './logging.service';
 import { Review } from '../../models/review.model';
+import { environment } from '../../environments/environment';
 
 @Injectable({
   providedIn: 'root'
 })
 export class BookService {
-  private apiUrl = 'http://localhost:5000/api/books'; // Update with your API URL
+  private apiUrl = `${environment.apiUrl}/books`;
 
   constructor(private http: HttpClient, private loggingService: LoggingService) {}
 
