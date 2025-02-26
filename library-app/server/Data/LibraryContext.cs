@@ -10,6 +10,7 @@ namespace library_app.Data
         public DbSet<Book> Books { get; set; }
         public DbSet<Checkout> Checkouts { get; set; }
         public DbSet<User> Users { get; set; }
+        public DbSet<Review> Reviews { get; set; } // Add this line
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -17,6 +18,11 @@ namespace library_app.Data
                 .HasMany(b => b.Checkouts)
                 .WithOne(c => c.Book)
                 .HasForeignKey(c => c.BookId);
+            
+            modelBuilder.Entity<Book>()
+                .HasMany(b => b.Reviews)
+                .WithOne(r => r.Book)
+                .HasForeignKey(r => r.BookId);
 
             modelBuilder.Entity<User>()
                 .HasMany(u => u.Checkouts)

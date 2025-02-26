@@ -5,6 +5,7 @@ import { catchError } from 'rxjs/operators';
 import { Book } from '../../models/book.model';
 import { Checkout } from '../../models/checkout.model';
 import { LoggingService } from './logging.service';
+import { Review } from '../../models/review.model';
 
 @Injectable({
   providedIn: 'root'
@@ -36,6 +37,17 @@ export class BookService {
     );
   }
 
+  getBookById(bookId: number): Observable<Book> {
+    return this.http.get<Book>(`${this.apiUrl}/${bookId}`).pipe(
+      catchError(this.handleError.bind(this))
+    );
+  }
+  addBook(book: Book): Observable<Book> {
+    return this.http.post<Book>(this.apiUrl, book).pipe(
+      catchError(this.handleError.bind(this))
+    );
+  }
+
   isBookAvailable(bookId: number): Observable<boolean> {
     return this.http.get<boolean>(`${this.apiUrl}/${bookId}/availability`).pipe(
       catchError(this.handleError.bind(this))
@@ -62,6 +74,18 @@ export class BookService {
 
   returnBook(checkoutId: number): Observable<void> {
     return this.http.post<void>(`${this.apiUrl}/return`, checkoutId).pipe(
+      catchError(this.handleError.bind(this))
+    );
+  }
+
+  addReview(bookId: number, review: Review): Observable<Review> {
+    return this.http.post<Review>(`${this.apiUrl}/${bookId}/reviews`, review).pipe(
+      catchError(this.handleError.bind(this))
+    );
+  }
+
+  getReviews(bookId: number): Observable<Review[]> {
+    return this.http.get<Review[]>(`${this.apiUrl}/${bookId}/reviews`).pipe(
       catchError(this.handleError.bind(this))
     );
   }

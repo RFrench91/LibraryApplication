@@ -9,9 +9,11 @@ import { LoginComponent } from './components/login/login.component';
 import { SignupComponent } from './components/signup/signup.component';
 import { HttpClientModule } from '@angular/common/http';
 import { FormsModule } from '@angular/forms';
-import { BookDetailComponent } from './components/book-detail/book-detail.component';
+import { BookDetailsComponent } from './components/book-detail/book-detail.component';
 import { GlobalErrorHandler } from './services/error-handler.service';
 import { LoggingService } from './services/logging.service';
+import { SearchBooksComponent } from './components/search-books/search-books.component';
+import { RouterModule } from '@angular/router';
 
 @NgModule({
   declarations: [
@@ -21,13 +23,15 @@ import { LoggingService } from './services/logging.service';
     LayoutComponent,
     LoginComponent,
     SignupComponent,
-    BookDetailComponent
+    BookDetailsComponent,
+    SearchBooksComponent
   ],
   imports: [
     BrowserModule,
     AppRoutingModule,
     HttpClientModule,
-    FormsModule
+    FormsModule,
+    RouterModule
   ],
   providers: [ 
     { provide: ErrorHandler, useClass: GlobalErrorHandler},

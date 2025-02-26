@@ -6,4 +6,5 @@ export interface Book {
   publishedDate: Date;
   genre: string;
   isAvailable: boolean;
+  averageRating: number;
 }

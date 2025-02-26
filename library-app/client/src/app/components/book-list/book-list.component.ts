@@ -23,6 +23,7 @@ export class BookListComponent implements OnInit {
   availabilityMap: { [bookId: number]: boolean } = {};
   private selectedBookSubject = new BehaviorSubject<Book | null>(null);
   selectedBook$: Observable<Book | null> = this.selectedBookSubject.asObservable();
+  selectedBook: Book | null = null; // Add this line
 
   constructor(private bookService: BookService, private authService: AuthService, private loggingService: LoggingService) {}
 
@@ -127,6 +128,7 @@ export class BookListComponent implements OnInit {
 
   onSelectBook(book: Book): void {
     this.selectedBookSubject.next(book);
+    this.selectedBook = book; // Add this line
   }
 
   checkAvailability(): void {

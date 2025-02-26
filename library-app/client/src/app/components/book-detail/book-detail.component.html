@@ -1,7 +1,38 @@
 <div *ngIf="book">
   <h2>{{ book.title }}</h2>
-  <p><strong>Author:</strong> {{ book.author }}</p>
-  <p><strong>ISBN:</strong> {{ book.isbn }}</p>
-  <p><strong>Published Date:</strong> {{ book.publishedDate | date }}</p>
-  <p><strong>Genre:</strong> {{ book.genre }}</p>
+  <p>Author: {{ book.author }}</p>
+  <p>ISBN: {{ book.isbn }}</p>
+  <p>Published Date: {{ book.publishedDate | date }}</p>
+  <p>Genre: {{ book.genre }}</p>
+  <p>Availability: {{ book.isAvailable ? 'Available' : 'Not Available' }}</p>
+  <p>Average Rating: {{ book.averageRating | number:'1.1-1' }}</p>
+
+  <h3>Reviews</h3>
+  <div *ngIf="(reviews$ | async)?.length > 0">
+    <ul>
+      <li *ngFor="let review of (reviews$ | async)">
+        <p><strong>{{ review.username }}</strong> ({{ review.rating }} stars)</p>
+        <p>{{ review.comment }}</p>
+        <p><small>{{ review.createdAt | date:'short' }}</small></p>
+      </li>
+    </ul>
+  </div>
+  <div *ngIf="(reviews$ | async)?.length === 0">
+    <p>No reviews yet.</p>
+  </div>
+
+  <div *ngIf="currentUser">
+    <h3>Add a Review</h3>
+    <form (ngSubmit)="addReview()">
+      <label for="rating">Rating:</label>
+      <select id="rating" [(ngModel)]="newReview.rating" name="rating" required>
+        <option *ngFor="let rating of [1, 2, 3, 4, 5]" [value]="rating">{{ rating }}</option>
+      </select>
+      <br>
+      <label for="comment">Review:</label>
+      <textarea id="comment" [(ngModel)]="newReview.comment" name="comment" required></textarea>
+      <br>
+      <button type="submit">Submit</button>
+    </form>
+  </div>
 </div>

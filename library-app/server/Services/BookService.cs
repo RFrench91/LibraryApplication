@@ -19,12 +19,18 @@ namespace library_app.Services
 
         public async Task<IEnumerable<Book>> GetBooksAsync()
         {
-            return await _context.Books.Include(b => b.Checkouts).ToListAsync();
+            return await _context.Books
+            .Include(b => b.Checkouts)
+            .Include(b => b.Reviews)
+            .ToListAsync();
         }
 
         public async Task<Book> GetBookByIdAsync(int id)
         {
-            return await _context.Books.Include(b => b.Checkouts).FirstOrDefaultAsync(b => b.Id == id);
+            return await _context.Books
+            .Include(b => b.Checkouts)
+            .Include(b => b.Reviews)
+            .FirstOrDefaultAsync(b => b.Id == id);
         }
 
         public async Task<bool> IsBookAvailableAsync(int id)
@@ -73,6 +79,17 @@ namespace library_app.Services
 
             checkout.ReturnDate = DateTime.UtcNow;
             await _context.SaveChangesAsync();
+        }
+
+        public async Task AddReviewAsync(Review review)
+        {
+            _context.Reviews.Add(review);
+            await _context.SaveChangesAsync();
+        }
+
+        public async Task<IEnumerable<Review>> GetReviewsAsync(int bookId)
+        {
+            return await _context.Reviews.Include(r => r.User).Where(r => r.BookId == bookId).ToListAsync();
         }
     }
 }

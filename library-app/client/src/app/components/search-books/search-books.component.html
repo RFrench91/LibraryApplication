@@ -1,0 +1,21 @@
+<div>
+    <h2>Search Books</h2>
+    <input type="text" [(ngModel)]="titleFilter" placeholder="Enter book title" />
+    <button (click)="searchBooks()">Search</button>
+  </div>
+  
+  <div *ngIf="books.length > 0">
+    <ul>
+      <li *ngFor="let book of books">
+        <h3>{{ book.title }}</h3>
+        <p>{{ book.author }}</p>
+        <p>{{ book.isbn }}</p>
+        <p>{{ book.publishedDate | date }}</p>
+        <p>{{ book.genre }}</p>
+        <p>{{ book.isAvailable ? 'Available' : 'Not Available' }}</p>
+      </li>
+    </ul>
+  </div>
+  <div *ngIf="books.length === 0">
+    <p>No books found.</p>
+  </div>

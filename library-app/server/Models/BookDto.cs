@@ -11,5 +11,6 @@ namespace library_app.Models.Dto
         public DateTime PublishedDate { get; set; }
         public string Genre { get; set; }
         public bool IsAvailable { get; set; }
+        public double AverageRating { get; set; }
     }
 }

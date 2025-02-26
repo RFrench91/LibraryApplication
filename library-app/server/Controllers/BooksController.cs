@@ -48,7 +48,8 @@ namespace library_app.Controllers
                 ISBN = b.ISBN,
                 PublishedDate = b.PublishedDate,
                 Genre = b.Genre,
-                IsAvailable = b.IsAvailable
+                IsAvailable = b.IsAvailable,
+                AverageRating = b.AverageRating
             }).ToList();
 
             return Ok(bookDtos);
@@ -68,7 +69,8 @@ namespace library_app.Controllers
                 ISBN = b.ISBN,
                 PublishedDate = b.PublishedDate,
                 Genre = b.Genre,
-                IsAvailable = b.IsAvailable
+                IsAvailable = b.IsAvailable,
+                AverageRating = b.AverageRating
             }).ToList();
 
             return Ok(bookDtos);
@@ -91,7 +93,8 @@ namespace library_app.Controllers
                 ISBN = book.ISBN,
                 PublishedDate = book.PublishedDate,
                 Genre = book.Genre,
-                IsAvailable = book.IsAvailable
+                IsAvailable = book.IsAvailable,
+                AverageRating = book.AverageRating
             };
 
             return Ok(bookDto);
@@ -144,6 +147,45 @@ namespace library_app.Controllers
             {
                 return BadRequest(ex.Message);
             }
+        }
+
+        [HttpPost("{id}/reviews")]
+        public async Task<ActionResult<ReviewDto>> AddReview(int id, [FromBody] ReviewDto reviewDto)
+        {
+            var review = new Review
+            {
+                BookId = id,
+                UserId = reviewDto.UserId,
+                Rating = reviewDto.Rating,
+                Comment = reviewDto.Comment,
+                 CreatedAt = DateTime.UtcNow
+            };
+
+            await _bookService.AddReviewAsync(review);
+
+            reviewDto.Id = review.Id;
+            reviewDto.CreatedAt = review.CreatedAt;
+
+            return Ok(reviewDto);
+        }
+
+        [HttpGet("{id}/reviews")]
+        public async Task<ActionResult<IEnumerable<ReviewDto>>> GetReviews(int id)
+        {
+            var reviews = await _bookService.GetReviewsAsync(id);
+
+            var reviewDtos = reviews.Select(r => new ReviewDto
+            {
+                Id = r.Id,
+                BookId = r.BookId,
+                UserId = r.UserId,
+                Username = r.User.Username,
+                Rating = r.Rating,
+                Comment = r.Comment,
+                CreatedAt = r.CreatedAt
+            }).ToList();
+
+            return Ok(reviewDtos);
         }
     }
 }

@@ -26,6 +26,7 @@ public class Startup
         services.AddControllers()
             .AddJsonOptions(options =>
             {
+                // Use ReferenceHandler.IgnoreCycles to avoid circular reference issues
                 options.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles;
             });
 
