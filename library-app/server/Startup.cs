@@ -41,7 +41,7 @@ public class Startup
             options.AddPolicy("AllowSpecificOrigins",
                 builder =>
                 {
-                    builder.WithOrigins("http://localhost:4200")
+                    builder.WithOrigins(Configuration.GetSection("AllowedOrigins").Get<string[]>())
                            .AllowAnyMethod()
                            .AllowAnyHeader()
                            .AllowCredentials();
@@ -119,7 +119,7 @@ public class Startup
         {
             if (context.Request.Method == "OPTIONS")
             {
-                context.Response.Headers.Add("Access-Control-Allow-Origin", "http://localhost:4200");
+                context.Response.Headers.Add("Access-Control-Allow-Origin", Configuration.GetSection("AllowedOrigins").Get<string[]>());
                 context.Response.Headers.Add("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
                 context.Response.Headers.Add("Access-Control-Allow-Headers", "Content-Type, Authorization");
                 context.Response.StatusCode = 204;
